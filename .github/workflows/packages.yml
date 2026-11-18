@@ -6,7 +6,7 @@ on:
     - cron: '17 * * * *'
   push:
     branches: [main]
-    paths: ['.github/workflows/packages.yml', 'scripts/**']
+    paths: ['.github/workflows/packages.yml', 'scripts/**', 'recipes/**']
 
 concurrency:
   group: packages
@@ -48,10 +48,16 @@ jobs:
         if: steps.release.outputs.ready == 'true'
         env:
           TAG: ${{ steps.release.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           python3 scripts/package-manifests.py "$TAG" assets generated
           python3 scripts/homebrew.py "$TAG" assets Formula/utuimp.rb
           cp -R generated/aur generated/winget .
+          cp -R recipes/utuimp-git aur/
+          sha=$(gh api "repos/tphx37/utuimp/commits/$TAG" --jq .sha)
+          pkgver="${TAG#v}.r0.g$(printf '%s' "$sha" | cut -c1-7)"
+          sed -i "s/^pkgver=.*/pkgver=$pkgver/" aur/utuimp-git/PKGBUILD
+          sed -i "s/^\([[:space:]]*pkgver = \).*/\1$pkgver/" aur/utuimp-git/.SRCINFO
       - name: Sign Arch packages and repository
         if: steps.release.outputs.ready == 'true'
         env:
@@ -92,6 +98,30 @@ jobs:
             git commit -m "Update packages to $TAG"
             git push
           fi
+      - name: Publish AUR recipes
+        if: steps.release.outputs.ready == 'true' && vars.AUR_ENABLED == 'true'
+        env:
+          AUR_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          key="$RUNNER_TEMP/utuimp-aur-key"
+          trap 'rm -f "$key"' EXIT
+          printf '%s\n' "$AUR_KEY" > "$key"
+          export GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$PWD/aur-known-hosts"
+          for package in utuimp-bin utuimp-git; do
+            dest="$RUNNER_TEMP/$package"
+            git clone "ssh://aur@aur.archlinux.org/$package.git" "$dest"
+            cp "aur/$package/PKGBUILD" "aur/$package/.SRCINFO" "$dest/"
+            git -C "$dest" config user.name tphx37
+            git -C "$dest" config user.email 121346185+tphx37@users.noreply.github.com
+            git -C "$dest" add PKGBUILD .SRCINFO
+            if ! git -C "$dest" diff --cached --quiet; then
+              git -C "$dest" commit -m "Update $package"
+              git -C "$dest" push
+            fi
+          done
       - uses: actions/configure-pages@v5
         if: steps.release.outputs.ready == 'true'
       - uses: actions/upload-pages-artifact@v3

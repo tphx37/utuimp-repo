@@ -74,7 +74,9 @@ package() {{
     }
     for suffix, value in manifests.items():
         # JSON is valid YAML; winget consumes these .yaml files directly.
-        (winget / f"tphx37.utuimp{suffix}.yaml").write_text(json.dumps(value, indent=2) + "\n")
+        header = ("# yaml-language-server: $schema=https://aka.ms/winget-manifest."
+                  f"{value['ManifestType']}.{value['ManifestVersion']}.schema.json\n\n")
+        (winget / f"tphx37.utuimp{suffix}.yaml").write_text(header + json.dumps(value, indent=2) + "\n")
     metadata = [
         "pkgbase = utuimp-bin", "\tpkgdesc = Universal terminal user interface media player",
         f"\tpkgver = {version}", "\tpkgrel = 1", "\turl = https://github.com/tphx37/utuimp",

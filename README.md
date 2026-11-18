@@ -31,21 +31,24 @@ Install or update:
 
 ```sh
 sudo pacman -Syu utuimp
+# Or, with yay / paru after the same repository setup:
+yay -Syu utuimp
 ```
 
 Remove:
 
 ```sh
 sudo pacman -Rns utuimp
+# Or:
+yay -Rns utuimp
 ```
 
-The repository becomes available when the first stable release with an
-Arch package has been published. Current deployment:
-[packages workflow](https://github.com/tphx37/utuimp-repo/actions/workflows/packages.yml).
+Packages and the database are signed. New stable releases are published automatically.
+[Deployment status](https://github.com/tphx37/utuimp-repo/actions/workflows/packages.yml).
 
 ## Homebrew (macOS and Linux x86_64)
 
-The binary formula is published with the first supported stable release:
+Install a release binary:
 
 ```sh
 brew tap --custom-remote tphx37/utuimp-repo https://github.com/tphx37/utuimp-repo.git
@@ -60,10 +63,36 @@ brew uninstall utuimp
 brew untap tphx37/utuimp-repo
 ```
 
-## Other packages
+## AUR
 
-Versioned AUR recipes and winget manifests are stored in `aur/` and `winget/`
-after each supported stable release. Availability through `yay` and the
-winget community catalog depends on publication to their respective catalogs.
+Versioned recipes are available in `aur/`. They have not yet been published
+to the AUR catalog. `yay -Syu utuimp` already works through the signed
+repository configured above.
+
+## Windows / winget
+
+[Community catalog submission](https://github.com/microsoft/winget-pkgs/pull/483188)
+is pending. Until accepted, install the published local manifest in PowerShell
+(enable local manifests in an administrator terminal):
+
+```powershell
+winget settings --enable LocalManifestFiles
+Invoke-WebRequest https://github.com/tphx37/utuimp/releases/latest/download/packaging.zip -OutFile packaging.zip
+Expand-Archive .\packaging.zip -DestinationPath .\utuimp-packaging -Force
+$manifest = Get-ChildItem .\utuimp-packaging\winget\manifests\t\tphx37\utuimp -Directory | Sort-Object Name -Descending | Select-Object -First 1
+winget install --manifest $manifest.FullName
+```
+
+After catalog acceptance:
+
+```powershell
+winget install --id tphx37.utuimp --exact
+```
+
+Remove either installation:
+
+```powershell
+winget uninstall --id tphx37.utuimp --exact
+```
 
 Removal preserves utuimp settings and your local music.

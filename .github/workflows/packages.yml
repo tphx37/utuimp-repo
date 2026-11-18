@@ -84,6 +84,7 @@ jobs:
               gpg --batch --import key/private.asc
               sh scripts/build-pacman-repo.sh site assets/*.pkg.tar.zst
             '
+          sudo chown -R "$(id -u):$(id -g)" site
           rm -f key/private.asc
           cp index.html site/
           cp pacman.conf site/

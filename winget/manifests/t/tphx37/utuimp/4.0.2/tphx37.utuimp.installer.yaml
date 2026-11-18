@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.9.0.schema.json
+
+{
+  "PackageIdentifier": "tphx37.utuimp",
+  "PackageVersion": "4.0.2",
+  "ManifestVersion": "1.9.0",
+  "InstallerType": "zip",
+  "NestedInstallerType": "portable",
+  "NestedInstallerFiles": [
+    {
+      "RelativeFilePath": "utuimp.exe",
+      "PortableCommandAlias": "utuimp"
+    }
+  ],
+  "UpgradeBehavior": "uninstallPrevious",
+  "Commands": [
+    "utuimp"
+  ],
+  "Installers": [
+    {
+      "Architecture": "x64",
+      "InstallerUrl": "https://github.com/tphx37/utuimp/releases/download/v4.0.2/utuimp_windows_amd64.zip",
+      "InstallerSha256": "F63735BF1B56EDCA65CD6A4262FC99F861EC3F3E982602B95061C350BCEB7F6E"
+    }
+  ],
+  "ManifestType": "installer"
+}

@@ -1,6 +1,6 @@
 pkgbase = utuimp-git
 	pkgdesc = Universal terminal user interface media player
-	pkgver = 4.0.1.r0.g4cd361c
+	pkgver = 4.0.2.r0.g832fbae
 	pkgrel = 1
 	url = https://github.com/tphx37/utuimp
 	arch = x86_64

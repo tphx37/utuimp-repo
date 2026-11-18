@@ -1,6 +1,6 @@
 pkgbase = utuimp-bin
 	pkgdesc = Universal terminal user interface media player
-	pkgver = 4.0.1
+	pkgver = 4.0.2
 	pkgrel = 1
 	url = https://github.com/tphx37/utuimp
 	arch = x86_64
@@ -18,7 +18,7 @@ pkgbase = utuimp-bin
 	provides = utuimp
 	conflicts = utuimp
 	conflicts = utuimp-git
-	source = utuimp-4.0.1.tar.gz::https://github.com/tphx37/utuimp/releases/download/v4.0.1/utuimp_linux_amd64.tar.gz
-	sha256sums = aaef0b284ab0d614872c3d846450fe367f2b6e1e9ae6683b5254bae3e97293ff
+	source = utuimp-4.0.2.tar.gz::https://github.com/tphx37/utuimp/releases/download/v4.0.2/utuimp_linux_amd64.tar.gz
+	sha256sums = 2c00f01a42b1f38cd2cb43508c78a0458325b6e84f260e859d8b64ebfd1b51cc
 
 pkgname = utuimp-bin

@@ -1,0 +1,6 @@
+/assets/
+/generated/
+/site/
+/key/
+/release.json
+__pycache__/

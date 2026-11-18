@@ -1,0 +1,111 @@
+name: packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/packages.yml', 'scripts/**']
+
+concurrency:
+  group: packages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.release.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download latest stable release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/tphx37/utuimp/releases/latest > release.json
+          tag=$(jq -r .tag_name release.json)
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          if ! jq -e '.assets[] | select(.name | endswith(".pkg.tar.zst"))' release.json >/dev/null; then
+            echo "Release $tag has no Arch package yet."
+            exit 0
+          fi
+          gh release download "$tag" --repo tphx37/utuimp --dir assets \
+            --pattern '*.pkg.tar.zst' --pattern 'checksums.txt' \
+            --pattern 'utuimp_*.tar.gz' --pattern 'utuimp_windows_amd64.zip'
+          (cd assets && sha256sum --ignore-missing --check checksums.txt)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - name: Generate AUR, winget and Homebrew packages
+        if: steps.release.outputs.ready == 'true'
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          python3 scripts/package-manifests.py "$TAG" assets generated
+          python3 scripts/homebrew.py "$TAG" assets Formula/utuimp.rb
+          cp -R generated/aur generated/winget .
+      - name: Sign Arch packages and repository
+        if: steps.release.outputs.ready == 'true'
+        env:
+          SIGNING_KEY: ${{ secrets.PACMAN_SIGNING_KEY }}
+          FINGERPRINT: ${{ vars.PACMAN_KEY_FINGERPRINT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SIGNING_KEY"
+          test -n "$FINGERPRINT"
+          mkdir -m 700 key
+          printf '%s\n' "$SIGNING_KEY" > key/private.asc
+          docker run --rm -v "$PWD:/work" -w /work \
+            -e UTUIMP_SIGNING_KEY="$FINGERPRINT" archlinux:base-devel bash -euc '
+              pacman -Syu --noconfirm --needed archlinux-keyring
+              pacman -S --noconfirm --needed gnupg libarchive
+              export GNUPGHOME=$(mktemp -d)
+              trap '\''gpgconf --kill all; rm -rf "$GNUPGHOME"'\'' EXIT
+              gpg --batch --import key/private.asc
+              sh scripts/build-pacman-repo.sh site assets/*.pkg.tar.zst
+            '
+          rm -f key/private.asc
+          cp index.html site/
+          cp pacman.conf site/
+          printf '%s\n' '${{ steps.release.outputs.tag }}' > site/version.txt
+      - name: Remove temporary signing key
+        if: always()
+        run: sudo rm -rf key
+      - name: Update package catalog
+        if: steps.release.outputs.ready == 'true'
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add Formula aur winget
+          if ! git diff --cached --quiet; then
+            git commit -m "Update packages to $TAG"
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+        if: steps.release.outputs.ready == 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.release.outputs.ready == 'true'
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

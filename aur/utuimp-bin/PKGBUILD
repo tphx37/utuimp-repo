@@ -1,0 +1,22 @@
+# Maintainer: tphx37 <https://github.com/tphx37>
+pkgname=utuimp-bin
+pkgver=4.0.1
+pkgrel=1
+pkgdesc='Universal terminal user interface media player'
+arch=('x86_64')
+url='https://github.com/tphx37/utuimp'
+license=('GPL-3.0-or-later' 'MIT')
+depends=('glibc' 'gstreamer' 'gst-plugins-base' 'gst-plugins-good' 'gst-libav' 'fontconfig')
+optdepends=('yt-dlp: YouTube Music and SoundCloud' 'ffmpeg: YouTube Music and SoundCloud' 'librespot: Spotify Premium')
+provides=('utuimp')
+conflicts=('utuimp' 'utuimp-git')
+source=("utuimp-$pkgver.tar.gz::https://github.com/tphx37/utuimp/releases/download/v4.0.1/utuimp_linux_amd64.tar.gz")
+sha256sums=('aaef0b284ab0d614872c3d846450fe367f2b6e1e9ae6683b5254bae3e97293ff')
+
+package() {
+  install -Dm755 "$srcdir/utuimp" "$pkgdir/usr/bin/utuimp"
+  install -Dm644 "$srcdir/flatpak/io.github.tphx37.utuimp.desktop" "$pkgdir/usr/share/applications/io.github.tphx37.utuimp.desktop"
+  install -Dm644 "$srcdir/assets/logo.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/io.github.tphx37.utuimp.png"
+  install -Dm644 "$srcdir/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 "$srcdir/NOTICE" "$pkgdir/usr/share/licenses/$pkgname/NOTICE"
+}

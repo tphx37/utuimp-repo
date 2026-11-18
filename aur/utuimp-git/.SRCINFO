@@ -1,0 +1,29 @@
+pkgbase = utuimp-git
+	pkgdesc = Universal terminal user interface media player
+	pkgver = 4.0.1.r0.g4cd361c
+	pkgrel = 1
+	url = https://github.com/tphx37/utuimp
+	arch = x86_64
+	arch = aarch64
+	license = GPL-3.0-or-later
+	license = MIT
+	makedepends = git
+	makedepends = go>=1.26
+	makedepends = gcc
+	makedepends = pkgconf
+	depends = glibc
+	depends = gstreamer
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gst-libav
+	depends = fontconfig
+	optdepends = yt-dlp: YouTube Music and SoundCloud
+	optdepends = ffmpeg: YouTube Music and SoundCloud
+	optdepends = librespot: Spotify Premium
+	provides = utuimp
+	conflicts = utuimp
+	conflicts = utuimp-bin
+	source = utuimp::git+https://github.com/tphx37/utuimp.git#branch=main
+	sha256sums = SKIP
+
+pkgname = utuimp-git

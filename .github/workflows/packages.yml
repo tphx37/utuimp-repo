@@ -34,6 +34,11 @@ jobs:
           gh api repos/tphx37/utuimp/releases/latest > release.json
           tag=$(jq -r .tag_name release.json)
           [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          if [[ "$GITHUB_EVENT_NAME" == schedule ]] && \
+             [[ "$(curl -fsSL https://tphx37.github.io/utuimp-repo/version.txt || true)" == "$tag" ]]; then
+            echo "Release $tag is already published."
+            exit 0
+          fi
           if ! jq -e '.assets[] | select(.name | endswith(".pkg.tar.zst"))' release.json >/dev/null; then
             echo "Release $tag has no Arch package yet."
             exit 0

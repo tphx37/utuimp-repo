@@ -1,6 +1,6 @@
 # Maintainer: tphx37 <https://github.com/tphx37>
 pkgname=utuimp-bin
-pkgver=4.0.2
+pkgver=4.0.3
 pkgrel=1
 pkgdesc='Universal terminal user interface media player'
 arch=('x86_64')
@@ -10,8 +10,8 @@ depends=('glibc' 'gstreamer' 'gst-plugins-base' 'gst-plugins-good' 'gst-libav' '
 optdepends=('yt-dlp: YouTube Music and SoundCloud' 'ffmpeg: YouTube Music and SoundCloud' 'librespot: Spotify Premium')
 provides=('utuimp')
 conflicts=('utuimp' 'utuimp-git')
-source=("utuimp-$pkgver.tar.gz::https://github.com/tphx37/utuimp/releases/download/v4.0.2/utuimp_linux_amd64.tar.gz")
-sha256sums=('2c00f01a42b1f38cd2cb43508c78a0458325b6e84f260e859d8b64ebfd1b51cc')
+source=("utuimp-$pkgver.tar.gz::https://github.com/tphx37/utuimp/releases/download/v4.0.3/utuimp_linux_amd64.tar.gz")
+sha256sums=('baaa88cee46206cd9af19461d6b6c7adb3d8f009ac9d78ee6cddcb9c26674cdd')
 
 package() {
   install -Dm755 "$srcdir/utuimp" "$pkgdir/usr/bin/utuimp"

@@ -1,6 +1,6 @@
 # Maintainer: tphx37 <https://github.com/tphx37>
 pkgname=utuimp-git
-pkgver=4.0.2.r0.g832fbae
+pkgver=4.0.3.r0.g2874dcf
 pkgrel=1
 pkgdesc='Universal terminal user interface media player'
 arch=('x86_64' 'aarch64')

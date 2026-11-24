@@ -2,25 +2,25 @@ class Utuimp < Formula
   desc "Universal terminal user interface media player"
   homepage "https://github.com/tphx37/utuimp"
   license "GPL-3.0-or-later"
-  version "4.0.3"
+  version "4.0.4"
   depends_on "fontconfig"
 
   on_macos do
     on_arm do
-      url "https://github.com/tphx37/utuimp/releases/download/v4.0.3/utuimp_darwin_arm64.tar.gz"
-      sha256 "fbadd0a1793068be115f180e5d4c9eb3d0f8caf947445f9a27d40ae6d22d745b"
+      url "https://github.com/tphx37/utuimp/releases/download/v4.0.4/utuimp_darwin_arm64.tar.gz"
+      sha256 "f92c07d254aba4612bd34975241163229052ca9fd4299925ec8973850d89bbd2"
     end
     on_intel do
-      url "https://github.com/tphx37/utuimp/releases/download/v4.0.3/utuimp_darwin_amd64.tar.gz"
-      sha256 "a23ec0c46a8e72b58bf9542f60d165a252657cff82e6767a98f14010930bb344"
+      url "https://github.com/tphx37/utuimp/releases/download/v4.0.4/utuimp_darwin_amd64.tar.gz"
+      sha256 "da566fa4335e0bd7be9652edae1ab456e1b7004c2c4dfa31aa0b4f5c7d6ff444"
     end
   end
 
   on_linux do
     depends_on "gstreamer"
     depends_on arch: :x86_64
-    url "https://github.com/tphx37/utuimp/releases/download/v4.0.3/utuimp_linux_amd64.tar.gz"
-    sha256 "baaa88cee46206cd9af19461d6b6c7adb3d8f009ac9d78ee6cddcb9c26674cdd"
+    url "https://github.com/tphx37/utuimp/releases/download/v4.0.4/utuimp_linux_amd64.tar.gz"
+    sha256 "3993fd89efc22d3e3007144013ecef9bed9d70750b9487367952004ea470f6d7"
   end
 
   def install
